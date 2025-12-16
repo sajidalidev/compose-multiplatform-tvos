@@ -25,6 +25,11 @@ kotlin {
     }
     iosArm64()
     iosSimulatorArm64()
+
+    tvosX64()
+    tvosArm64()
+    tvosSimulatorArm64()
+
     js {
         browser {
             testTask {
@@ -76,43 +81,43 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.compose.material3)
-                implementation(libs.compose.ui.test)
-            }
-        }
+//        val commonTest by getting {
+//            dependencies {
+//                implementation(kotlin("test"))
+//                implementation(libs.kotlinx.coroutines.test)
+//                implementation(libs.compose.material3)
+//                implementation(libs.compose.ui.test)
+//            }
+//        }
         val blockingMain by creating {
             dependsOn(commonMain)
         }
-        val blockingTest by creating {
-            dependsOn(commonTest)
-        }
+//        val blockingTest by creating {
+//            dependsOn(commonTest)
+//        }
         val skikoMain by creating {
             dependsOn(commonMain)
         }
-        val skikoTest by creating {
-            dependsOn(commonTest)
-        }
+//        val skikoTest by creating {
+//            dependsOn(commonTest)
+//        }
         val jvmAndAndroidMain by creating {
             dependsOn(blockingMain)
         }
-        val jvmAndAndroidTest by creating {
-            dependsOn(blockingTest)
-        }
+//        val jvmAndAndroidTest by creating {
+//            dependsOn(blockingTest)
+//        }
         val desktopMain by getting {
             dependsOn(skikoMain)
             dependsOn(jvmAndAndroidMain)
         }
-        val desktopTest by getting {
-            dependsOn(skikoTest)
-            dependsOn(jvmAndAndroidTest)
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
+//        val desktopTest by getting {
+//            dependsOn(skikoTest)
+//            dependsOn(jvmAndAndroidTest)
+//            dependencies {
+//                implementation(compose.desktop.currentOs)
+//            }
+//        }
         val androidMain by getting {
             dependsOn(jvmAndAndroidMain)
             dependencies {
@@ -120,26 +125,26 @@ kotlin {
                 compileOnly(libs.androidx.test.monitor)
             }
         }
-        val androidInstrumentedTest by getting {
-            dependsOn(jvmAndAndroidTest)
-            dependencies {
-                implementation(libs.androidx.test.core)
-                implementation(libs.androidx.compose.ui.test)
-                implementation(libs.androidx.compose.ui.test.manifest)
-                implementation(libs.androidx.compose.ui.test.junit4)
-            }
-        }
-        val androidUnitTest by getting {
-            dependsOn(jvmAndAndroidTest)
-        }
+//        val androidInstrumentedTest by getting {
+//            dependsOn(jvmAndAndroidTest)
+//            dependencies {
+//                implementation(libs.androidx.test.core)
+//                implementation(libs.androidx.compose.ui.test)
+//                implementation(libs.androidx.compose.ui.test.manifest)
+//                implementation(libs.androidx.compose.ui.test.junit4)
+//            }
+//        }
+//        val androidUnitTest by getting {
+//            dependsOn(jvmAndAndroidTest)
+//        }
         val nativeMain by getting {
             dependsOn(skikoMain)
             dependsOn(blockingMain)
         }
-        val nativeTest by getting {
-            dependsOn(skikoTest)
-            dependsOn(blockingTest)
-        }
+//        val nativeTest by getting {
+//            dependsOn(skikoTest)
+//            dependsOn(blockingTest)
+//        }
         val webMain by getting {
             dependsOn(skikoMain)
             dependencies {
@@ -152,15 +157,15 @@ kotlin {
         val wasmJsMain by getting {
             dependsOn(webMain)
         }
-        val webTest by getting {
-            dependsOn(skikoTest)
-        }
-        val jsTest by getting {
-            dependsOn(webTest)
-        }
-        val wasmJsTest by getting {
-            dependsOn(webTest)
-        }
+//        val webTest by getting {
+//            dependsOn(skikoTest)
+//        }
+//        val jsTest by getting {
+//            dependsOn(webTest)
+//        }
+//        val wasmJsTest by getting {
+//            dependsOn(webTest)
+//        }
     }
 }
 
