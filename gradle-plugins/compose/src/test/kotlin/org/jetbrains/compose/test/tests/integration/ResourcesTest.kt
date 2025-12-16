@@ -1244,6 +1244,36 @@ class ResourcesTest : GradlePluginTestBase() {
     }
 
     @Test
+    fun tvosTestResources() {
+        Assumptions.assumeTrue(currentOS == OS.MacOS)
+        with(testProject("misc/appleResources")) {
+            file("build.gradle.kts").modify { content ->
+                content.replace(
+                    """
+                        |    iosX64()
+                        |    iosArm64()
+                        |    iosSimulatorArm64()
+                    """.trimMargin(),
+                    """
+                        |    tvosX64()
+                        |    tvosArm64()
+                        |    tvosSimulatorArm64()
+                    """.trimMargin()
+                )
+            }
+            file("src/iosMain").renameTo(file("src/tvosMain"))
+            gradle(":linkDebugTestTvosX64", "--dry-run").checks {
+                check.taskSkipped(":copyTestComposeResourcesForTvosX64")
+                check.taskSkipped(":linkDebugTestTvosX64")
+            }
+            gradle(":copyTestComposeResourcesForTvosX64").checks {
+                file("build/bin/tvosX64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/compose-multiplatform.xml").checkExists()
+                file("build/bin/tvosX64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/icon.xml").checkExists()
+            }
+        }
+    }
+
+    @Test
     fun checkTestResources() {
         with(testProject("misc/testResources")) {
             gradle("check").checks {

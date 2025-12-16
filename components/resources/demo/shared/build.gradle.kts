@@ -18,7 +18,11 @@ kotlin {
     jvm("desktop")
     listOf(
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
+
+        tvosX64(),
+        tvosArm64(),
+        tvosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "shared"

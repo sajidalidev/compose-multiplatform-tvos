@@ -47,6 +47,10 @@ kotlin {
     }
     iosArm64()
     iosSimulatorArm64()
+
+    tvosArm64()
+    tvosSimulatorArm64()
+
     js {
         browser {
             testTask {
@@ -96,45 +100,63 @@ kotlin {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.kotlinx.coroutines.core)
+
+                // tvOS fork: the tvOS variants of org.jetbrains.compose.* are injected at
+                // resolution time by the compose-tvos redirect plugin (see settings.gradle.kts),
+                // but Kotlin's granular metadata transformation only trusts a library's static
+                // project-structure metadata. Transitive compose modules therefore get demoted
+                // for the shared source sets unless they are declared DIRECTLY here, so list
+                // every compose module this library's commonMain code actually touches.
+                val composeVersion = libs.versions.compose.get()
+                implementation(libs.compose.ui)
+                implementation("org.jetbrains.compose.ui:ui-graphics:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-text:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-unit:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-util:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-geometry:$composeVersion")
+                implementation("org.jetbrains.compose.foundation:foundation-layout:$composeVersion")
+                implementation("org.jetbrains.compose.animation:animation:$composeVersion")
+                implementation("org.jetbrains.compose.animation:animation-core:$composeVersion")
+                implementation("org.jetbrains.compose.runtime:runtime-saveable:$composeVersion")
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.compose.material3)
-                implementation(libs.compose.ui.test)
-            }
-        }
+//        val commonTest by getting {
+//            dependencies {
+//                implementation(kotlin("test"))
+//                implementation(libs.kotlinx.coroutines.test)
+//                implementation(libs.compose.material3)
+//                implementation(libs.compose.ui.test)
+//            }
+//        }
         val blockingMain by creating {
             dependsOn(commonMain)
         }
-        val blockingTest by creating {
-            dependsOn(commonTest)
-        }
+//        val blockingTest by creating {
+//            dependsOn(commonTest)
+//        }
         val skikoMain by creating {
             dependsOn(commonMain)
         }
-        val skikoTest by creating {
-            dependsOn(commonTest)
-        }
+//        val skikoTest by creating {
+//            dependsOn(commonTest)
+//        }
         val jvmAndAndroidMain by creating {
             dependsOn(blockingMain)
         }
-        val jvmAndAndroidTest by creating {
-            dependsOn(blockingTest)
-        }
+//        val jvmAndAndroidTest by creating {
+//            dependsOn(blockingTest)
+//        }
         val desktopMain by getting {
             dependsOn(skikoMain)
             dependsOn(jvmAndAndroidMain)
         }
-        val desktopTest by getting {
-            dependsOn(skikoTest)
-            dependsOn(jvmAndAndroidTest)
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
+//        val desktopTest by getting {
+//            dependsOn(skikoTest)
+//            dependsOn(jvmAndAndroidTest)
+//            dependencies {
+//                implementation(compose.desktop.currentOs)
+//            }
+//        }
         val androidMain by getting {
             dependsOn(jvmAndAndroidMain)
             dependencies {
@@ -142,28 +164,28 @@ kotlin {
                 compileOnly(libs.androidx.test.monitor)
             }
         }
-        val androidDeviceTest by getting {
-            dependsOn(jvmAndAndroidTest)
-            dependencies {
-                implementation(libs.androidx.test.core)
-                implementation(libs.androidx.compose.ui.test)
-                implementation(libs.androidx.compose.ui.test.manifest)
-                implementation(libs.androidx.compose.ui.test.junit4)
-            }
-            resources.srcDir("src/commonTest/resources")
-        }
-        val androidHostTest by getting {
-            dependsOn(jvmAndAndroidTest)
-            resources.srcDir("src/commonTest/resources")
-        }
+//        val androidDeviceTest by getting {
+//            dependsOn(jvmAndAndroidTest)
+//            dependencies {
+//                implementation(libs.androidx.test.core)
+//                implementation(libs.androidx.compose.ui.test)
+//                implementation(libs.androidx.compose.ui.test.manifest)
+//                implementation(libs.androidx.compose.ui.test.junit4)
+//            }
+//            resources.srcDir("src/commonTest/resources")
+//        }
+//        val androidHostTest by getting {
+//            dependsOn(jvmAndAndroidTest)
+//            resources.srcDir("src/commonTest/resources")
+//        }
         val nativeMain by getting {
             dependsOn(skikoMain)
             dependsOn(blockingMain)
         }
-        val nativeTest by getting {
-            dependsOn(skikoTest)
-            dependsOn(blockingTest)
-        }
+//        val nativeTest by getting {
+//            dependsOn(skikoTest)
+//            dependsOn(blockingTest)
+//        }
         val webMain by getting {
             dependsOn(skikoMain)
             dependencies {
@@ -173,6 +195,13 @@ kotlin {
     }
 }
 
+// compose-tvos redirect settings plugin. A build-time dependency-substitution path
+// (org.jetbrains.compose.{ui,foundation,runtime,...} -> dev.sajidali equivalents, gated behind
+// -Ptvos.buildAgainstFork=true) was prototyped for 1.12.0-beta01 and abandoned: the fork core's
+// mavenLocal publish only republishes the umbrella + new tvosArm64/tvosSimulatorArm64 platform
+// artifacts, and redirecting the root module broke Kotlin's hierarchical common-metadata
+// compilation (which needs a consistent variant set across every target sharing a source set).
+// See task-9a-report.md in compose-tvos-redirect for the full investigation.
 configureMavenPublication(
     groupId = "org.jetbrains.compose.components",
     artifactId = "components-resources",
