@@ -1255,20 +1255,19 @@ class ResourcesTest : GradlePluginTestBase() {
                         |    iosSimulatorArm64()
                     """.trimMargin(),
                     """
-                        |    tvosX64()
                         |    tvosArm64()
                         |    tvosSimulatorArm64()
                     """.trimMargin()
                 )
             }
             file("src/iosMain").renameTo(file("src/tvosMain"))
-            gradle(":linkDebugTestTvosX64", "--dry-run").checks {
-                check.taskSkipped(":copyTestComposeResourcesForTvosX64")
-                check.taskSkipped(":linkDebugTestTvosX64")
+            gradle(":linkDebugTestTvosSimulatorArm64", "--dry-run").checks {
+                check.taskSkipped(":copyTestComposeResourcesForTvosSimulatorArm64")
+                check.taskSkipped(":linkDebugTestTvosSimulatorArm64")
             }
-            gradle(":copyTestComposeResourcesForTvosX64").checks {
-                file("build/bin/tvosX64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/compose-multiplatform.xml").checkExists()
-                file("build/bin/tvosX64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/icon.xml").checkExists()
+            gradle(":copyTestComposeResourcesForTvosSimulatorArm64").checks {
+                file("build/bin/tvosSimulatorArm64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/compose-multiplatform.xml").checkExists()
+                file("build/bin/tvosSimulatorArm64/debugTest/compose-resources/composeResources/appleresources.generated.resources/drawable/icon.xml").checkExists()
             }
         }
     }
