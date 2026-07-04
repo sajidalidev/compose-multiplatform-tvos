@@ -1,3 +1,4 @@
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -78,6 +79,25 @@ subprojects {
                     from(components["java"])
                 }
             }
+        }
+
+        // When publishing under an overridden group (-Ppublication.groupId), do NOT publish the
+        // Gradle "plugin marker" artifact (e.g. org.jetbrains.compose:org.jetbrains.compose.gradle.plugin),
+        // since its POM would point plugin-id resolution (id("org.jetbrains.compose") version "...")
+        // at the overridden group's coordinates for every consumer with this repository on their
+        // pluginManagement path - not just the redirect-aware ones. Consumer-side substitution for
+        // the fork is handled exclusively by the redirect settings plugin's pluginManagement
+        // interception, which does not need this marker. Default (no override) behavior is
+        // unchanged: the marker publication remains active, matching upstream.
+        if (project.findProperty("publication.groupId") != null) {
+            // Match on the task name (set at creation time, before the maven-publish plugin wires
+            // up its `publication` property) rather than `publication.name`, which is both unset
+            // yet at this point and discarded from the configuration-cache snapshot by execution time.
+            tasks.matching { it.name.contains("PluginMarkerMavenPublication") }
+                .withType<AbstractPublishToMaven>()
+                .configureEach {
+                    onlyIf("publication.groupId override: skipping plugin marker publication") { false }
+                }
         }
     }
 
