@@ -206,8 +206,23 @@ android {
     }
 }
 
+// Version decision (see task-9a-report.md for the full investigation): this module is built
+// and published with compose.version left at its file default (1.11.0) rather than the fork
+// core's newer 1.12.0-beta01 dev.sajidali publish. A build-time dependency-substitution path
+// (org.jetbrains.compose.{ui,foundation,runtime,...} -> dev.sajidali equivalents at
+// 1.12.0-beta01, gated behind -Ptvos.buildAgainstFork=true) was prototyped but abandoned: the
+// fork core's mavenLocal publish only republished the umbrella + new tvosArm64/
+// tvosSimulatorArm64 platform artifacts (not android/desktop/ios/macos/js/wasm, which are
+// unchanged from upstream), and even scoped to tvOS-named configurations, redirecting the
+// root module broke Kotlin's hierarchical common-metadata compilation (which needs a
+// consistent variant set across every target sharing a source set, not just tvOS). The
+// existing org.jetbrains.compose.* artifacts already sitting in mavenLocal at 1.11.0 (a
+// complete, self-consistent set across every target including tvOS) compile cleanly instead,
+// so we publish components-resources at deploy.version=1.12.0-beta01 while compiling/linking
+// against org.jetbrains.compose.* 1.11.0 - the published POM/module metadata declares that
+// 1.11.0 dependency verbatim (org.jetbrains.*, never rewritten to dev.sajidali).
 configureMavenPublication(
-    groupId = "org.jetbrains.compose.components",
+    groupId = (findProperty("publication.groupId") as String?) ?: "org.jetbrains.compose.components",
     artifactId = "components-resources",
     name = "Resources for Compose JB"
 )
