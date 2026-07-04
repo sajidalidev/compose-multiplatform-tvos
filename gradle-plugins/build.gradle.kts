@@ -10,7 +10,7 @@ plugins {
 }
 
 subprojects {
-    group = BuildProperties.group
+    group = BuildProperties.group(project)
     version = BuildProperties.deployVersion(project)
 
     repositories {
