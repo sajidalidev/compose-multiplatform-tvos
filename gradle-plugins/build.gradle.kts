@@ -125,6 +125,16 @@ fun Project.configureMavenPublication(
                         url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
+                scm {
+                    url.set("https://github.com/sajidalidev/compose-tvos")
+                    connection.set("scm:git:https://github.com/sajidalidev/compose-tvos.git")
+                }
+                developers {
+                    developer {
+                        id.set("sajidalidev")
+                        name.set("Sajid Ali")
+                    }
+                }
             }
 
             customize()

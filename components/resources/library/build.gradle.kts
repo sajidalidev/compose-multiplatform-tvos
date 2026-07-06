@@ -220,7 +220,8 @@ android {
 configureMavenPublication(
     groupId = (findProperty("publication.groupId") as String?) ?: "org.jetbrains.compose.components",
     artifactId = "components-resources",
-    name = "Resources for Compose JB"
+    name = "Resources for Compose JB",
+    description = "Compose Multiplatform resources library with tvOS support (dev.sajidali fork)"
 )
 
 apiValidation {
