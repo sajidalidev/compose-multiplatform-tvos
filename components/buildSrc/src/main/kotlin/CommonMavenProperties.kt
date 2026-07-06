@@ -6,7 +6,8 @@ import org.gradle.kotlin.dsl.configure
 fun Project.configureMavenPublication(
     groupId: String,
     artifactId: String,
-    name: String
+    name: String,
+    description: String = name
 ) {
     extensions.configure<PublishingExtension> {
         publications {
@@ -22,11 +23,22 @@ fun Project.configureMavenPublication(
 
                 pom {
                     this.name.set(name)
+                    this.description.set(description)
                     url.set("https://github.com/JetBrains/compose-multiplatform")
                     licenses {
                         license {
                             this.name.set("The Apache License, Version 2.0")
                             url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/sajidalidev/compose-tvos")
+                        connection.set("scm:git:https://github.com/sajidalidev/compose-tvos.git")
+                    }
+                    developers {
+                        developer {
+                            id.set("sajidalidev")
+                            this.name.set("Sajid Ali")
                         }
                     }
                 }
