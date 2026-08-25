@@ -205,8 +205,7 @@ kotlin {
 configureMavenPublication(
     groupId = "org.jetbrains.compose.components",
     artifactId = "components-resources",
-    name = "Resources for Compose JB",
-    description = "Compose Multiplatform resources library with tvOS support (dev.sajidali fork)"
+    name = "Resources for Compose JB"
 )
 
 apiValidation {
