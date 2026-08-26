@@ -78,6 +78,23 @@ kotlin {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.kotlinx.coroutines.core)
+                // tvOS fork: the tvOS variants of org.jetbrains.compose.* are injected at
+                // resolution time by the compose-tvos redirect plugin (see settings.gradle.kts),
+                // but Kotlin's granular metadata transformation only trusts a library's static
+                // project-structure metadata. Transitive compose modules therefore get demoted
+                // for the shared source sets unless they are declared DIRECTLY here, so list
+                // every compose module this library's commonMain code actually touches.
+                val composeVersion = libs.versions.compose.get()
+                implementation(libs.compose.ui)
+                implementation("org.jetbrains.compose.ui:ui-graphics:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-text:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-unit:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-util:$composeVersion")
+                implementation("org.jetbrains.compose.ui:ui-geometry:$composeVersion")
+                implementation("org.jetbrains.compose.foundation:foundation-layout:$composeVersion")
+                implementation("org.jetbrains.compose.animation:animation:$composeVersion")
+                implementation("org.jetbrains.compose.animation:animation-core:$composeVersion")
+                implementation("org.jetbrains.compose.runtime:runtime-saveable:$composeVersion")
             }
         }
 //        val commonTest by getting {

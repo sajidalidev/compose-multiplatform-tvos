@@ -24,6 +24,22 @@ pluginManagement {
     }
 }
 
+
+// tvOS fork: the resources library's tvosArm64/tvosSimulatorArm64 targets resolve
+// org.jetbrains.compose.* through the compose-tvos redirect settings plugin, exactly like a
+// consumer app does (the official artifacts have no tvOS variants; the fork republishes them as
+// dev.sajidali.compose.* at the same version). Pair with -Pcompose.useMavenLocal=true so a locally
+// published fork core is visible, and -Ptvos.redirect.manifestUrl=file:///... to test an unpublished
+// version manifest. The included ../gradle-plugins build already provides the org.jetbrains.compose
+// plugin, so the plugin-marker interception is disabled.
+plugins { id("dev.sajidali.compose-tvos") version "1.3.0" }
+
+composeTvos {
+    interceptComposeGradlePlugin.set(false)
+    verbose.set(extra["tvos.redirect.verbose"] == "true")
+    (extra.properties["tvos.redirect.manifestUrl"] as? String)?.let { manifestUrl.set(it) }
+}
+
 dependencyResolutionManagement {
     repositories {
         if (extra["compose.useMavenLocal"] == "true") {
