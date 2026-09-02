@@ -24,7 +24,7 @@ fun Project.configureMavenPublication(
                 pom {
                     this.name.set(name)
                     this.description.set(description)
-                    url.set("https://github.com/JetBrains/compose-multiplatform")
+                    url.set("https://github.com/sajidalidev/compose-tvos")
                     licenses {
                         license {
                             this.name.set("The Apache License, Version 2.0")
@@ -32,8 +32,8 @@ fun Project.configureMavenPublication(
                         }
                     }
                     scm {
-                        url.set("https://github.com/sajidalidev/compose-tvos")
-                        connection.set("scm:git:https://github.com/sajidalidev/compose-tvos.git")
+                        url.set("https://github.com/sajidalidev/compose-multiplatform")
+                        connection.set("scm:git:https://github.com/sajidalidev/compose-multiplatform.git")
                     }
                     developers {
                         developer {

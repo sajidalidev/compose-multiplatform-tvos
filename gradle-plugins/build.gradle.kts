@@ -118,7 +118,7 @@ fun Project.configureMavenPublication(
             pom {
                 name.set(config.displayName)
                 description.set(config.description)
-                url.set(BuildProperties.website)
+                url.set("https://github.com/sajidalidev/compose-tvos")
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
@@ -126,8 +126,8 @@ fun Project.configureMavenPublication(
                     }
                 }
                 scm {
-                    url.set("https://github.com/sajidalidev/compose-tvos")
-                    connection.set("scm:git:https://github.com/sajidalidev/compose-tvos.git")
+                    url.set("https://github.com/sajidalidev/compose-multiplatform")
+                    connection.set("scm:git:https://github.com/sajidalidev/compose-multiplatform.git")
                 }
                 developers {
                     developer {
