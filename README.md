@@ -90,8 +90,10 @@ then:
 ./gradlew -p gradle-plugins -Ppublication.groupId=dev.sajidali.compose :compose:publishToMavenLocal
 ```
 
-`-Ptvos.redirect.manifestUrl=file:///...` points the redirect plugin at a local version manifest
-when testing an unpublished core release; `-Ptvos.redirect.verbose=true` logs what it resolves.
+The redirect plugin fetches its version manifest from the
+[compose-tvos](https://github.com/sajidalidev/compose-tvos/blob/main/manifest/compose-tvos-versions.json)
+repository (`main` branch), so no local manifest is needed. `-Ptvos.redirect.verbose=true` logs what
+the plugin resolves.
 
 `scripts/stage-central-bundle.sh <version>` signs and stages a Maven Central Portal bundle from
 `~/.m2`. It never uploads.

@@ -30,8 +30,9 @@ pluginManagement {
 // org.jetbrains.compose.* through the compose-tvos redirect settings plugin, exactly like a
 // consumer app does (the official artifacts have no tvOS variants; the fork republishes them as
 // dev.sajidali.compose.* at the same version). Pair with -Pcompose.useMavenLocal=true so a locally
-// published fork core is visible, and -Ptvos.redirect.manifestUrl=file:///... to test an unpublished
-// version manifest. The included ../gradle-plugins build already provides the org.jetbrains.compose
+// published fork core is visible. The version manifest is fetched from the compose-tvos repository
+// (main branch); -Ptvos.redirect.manifestUrl=http://... can point at another one (HTTP only, no
+// file://). The included ../gradle-plugins build already provides the org.jetbrains.compose
 // plugin, so the plugin-marker interception is disabled.
 plugins { id("dev.sajidali.compose-tvos") version "1.3.0" }
 
