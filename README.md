@@ -78,7 +78,7 @@ Full documentation: https://sajidalidev.github.io/compose-tvos/ — and [TVOS.md
 ## Building / publishing locally
 
 Publish the core fork to mavenLocal first (see
-[compose-multiplatform-core-tvos](https://github.com/sajidalidev/compose-multiplatform-core-tvos)),
+[compose-multiplatform-core](https://github.com/sajidalidev/compose-multiplatform-core)),
 then:
 
 ```bash
@@ -102,11 +102,11 @@ the plugin resolves.
 
 - [sajidalidev/compose-tvos](https://github.com/sajidalidev/compose-tvos) — the settings plugin,
   version manifest and docs. Start here.
-- [sajidalidev/compose-multiplatform-core-tvos](https://github.com/sajidalidev/compose-multiplatform-core-tvos)
+- [sajidalidev/compose-multiplatform-core](https://github.com/sajidalidev/compose-multiplatform-core)
   — fork of the Compose runtime/ui/foundation/material3/navigation/lifecycle sources with the
   actual tvOS rendering, focus and Siri Remote work.
 - [sajidalidev/koin](https://github.com/sajidalidev/koin) — Koin with tvOS targets.
-- [sajidalidev/coil-tvos](https://github.com/sajidalidev/coil-tvos) — Coil 3 with tvOS targets.
+- [sajidalidev/coil](https://github.com/sajidalidev/coil) — Coil 3 with tvOS targets.
 - [sajidalidev/jetstream-tvos](https://github.com/sajidalidev/jetstream-tvos) — sample app
   (Google's JetStream) running on Apple TV.
 
