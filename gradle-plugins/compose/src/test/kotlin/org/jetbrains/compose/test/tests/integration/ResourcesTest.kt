@@ -1250,13 +1250,26 @@ class ResourcesTest : GradlePluginTestBase() {
             file("build.gradle.kts").modify { content ->
                 content.replace(
                     """
-                        |    iosX64()
                         |    iosArm64()
                         |    iosSimulatorArm64()
                     """.trimMargin(),
                     """
                         |    tvosArm64()
                         |    tvosSimulatorArm64()
+                    """.trimMargin()
+                )
+            }
+            // The official org.jetbrains.compose.* artifacts have no tvOS variants; resolve them
+            // through the compose-tvos redirect settings plugin exactly like a consumer app (and
+            // like ../components does). The plugin under test already provides org.jetbrains.compose,
+            // so plugin-marker interception stays off.
+            file("settings.gradle.kts").modify { content ->
+                content.replace(
+                    "dependencyResolutionManagement {",
+                    """
+                        |plugins { id("dev.sajidali.compose-tvos") version "1.3.0" }
+                        |composeTvos { interceptComposeGradlePlugin.set(false) }
+                        |dependencyResolutionManagement {
                     """.trimMargin()
                 )
             }
