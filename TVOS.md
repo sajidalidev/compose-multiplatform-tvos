@@ -41,7 +41,7 @@ until it's live, see the [compose-tvos](https://github.com/sajidalidev/compose-t
   `dev.sajidali.*` coordinates instead of `org.jetbrains.compose.*` without touching the rest of
   the build logic.
 - The rest of the tvOS ecosystem lives in:
-  - [compose-multiplatform-core](https://github.com/sajidalidev/compose-multiplatform-core-tvos) —
+  - [compose-multiplatform-core](https://github.com/sajidalidev/compose-multiplatform-core) —
     the Compose runtime/UI/foundation/material3/navigation/lifecycle fork with the actual tvOS
     rendering, focus-navigation, and Siri Remote input work.
   - [compose-tvos](https://github.com/sajidalidev/compose-tvos) — the settings plugin, version
