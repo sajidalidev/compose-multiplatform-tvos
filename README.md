@@ -1,91 +1,114 @@
-> This fork adds Apple tvOS support — see [TVOS.md](TVOS.md) / https://sajidalidev.github.io/compose-tvos/
+# Compose Multiplatform — tvOS fork
 
-[![official project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![stable](https://img.shields.io/github/v/release/JetBrains/compose-multiplatform?sort=semver&display_name=release&label=stable&color=brightgreen)](https://github.com/JetBrains/compose-multiplatform/releases/latest)
-[![prerelease](https://img.shields.io/github/v/release/JetBrains/compose-multiplatform?include_prereleases&sort=semver&filter=*-*&display_name=release&label=prerelease&color=blue)](https://github.com/JetBrains/compose-multiplatform/releases)
-[![dev](https://img.shields.io/github/v/tag/JetBrains/compose-multiplatform?include_prereleases&sort=semver&filter=v*%2Bdev*&label=dev&color=orange)](https://github.com/JetBrains/compose-multiplatform/tags)
+This is a fork of [JetBrains/compose-multiplatform](https://github.com/JetBrains/compose-multiplatform)
+(the Compose Gradle plugin and `components-resources`) that adds Apple tvOS support.
+The upstream project's own README is [here](https://github.com/JetBrains/compose-multiplatform#readme).
 
-<a href="https://jb.gg/cmp">
-    <picture>
-        <source srcset="artwork/compose-logo-name-white.svg"  width="400" media="(prefers-color-scheme: dark)">
-        <img src="artwork/compose-logo-name-black.svg" alt="Compose Multiplatform logo and name" width="400">
-    </picture>
-</a>
+It is an unofficial community fork. It is not affiliated with or endorsed by JetBrains.
 
-[Compose Multiplatform](https://jb.gg/cmp) is a declarative framework for sharing UI code across multiple platforms with Kotlin. 
-It is based on [Jetpack Compose](https://developer.android.com/jetpack/compose) and developed by [JetBrains](https://www.jetbrains.com/) and open-source contributors.
+## Status / maintenance
 
-You can choose the platforms across which to share your UI code using Compose Multiplatform:
+I maintain only the tvOS port, and only as far as I need it for my own tvOS app. I do not track
+every upstream release; I republish roughly once per Compose Multiplatform stable line. There are
+no support commitments and no release schedule.
 
-* [iOS](https://jb.gg/start-cmp)
-* [Android](https://jb.gg/start-cmp) 
-* [Desktop](https://jb.gg/start-cmp) (Windows, MacOS, and Linux)
-* [Web](https://jb.gg/start-cmp) (Beta)
+**PRs are welcome** — bug fixes, additional targets or modules, and help keeping the fork up to
+date with upstream are all appreciated.
 
-For example, you can share UIs between iOS and Android or Windows and MacOS.
+## How to use it
 
-![Shared UIs of the iOS, Android, desktop, and web apps](artwork/readme/apps.png)
+Do not depend on this repository directly. Apply the
+[compose-tvos](https://github.com/sajidalidev/compose-tvos) Gradle settings plugin and keep your
+stock `org.jetbrains.compose` plugin id and `org.jetbrains.compose.components` coordinates:
 
-## iOS
+```kotlin
+// settings.gradle.kts
+plugins {
+    id("dev.sajidali.compose-tvos") version "1.3.0"
+}
+```
 
-Compose Multiplatform shares most of its API with Jetpack Compose, the Android UI framework developed by Google. 
-You can use the same APIs to build user interfaces for both Android and iOS.
+The plugin does two things that involve this repository:
 
-Since Compose is built on top of [Kotlin Multiplatform](https://jb.gg/kmp), 
-you can easily access native APIs, such as the [Camera API](https://developer.apple.com/documentation/avfoundation/capture_setup/avcam_building_a_camera_app), 
-and embed complex native UI views, such as [MKMapView](https://developer.apple.com/documentation/mapkit/mkmapview).
+- `plugins { id("org.jetbrains.compose") }` in your build scripts is transparently substituted
+  with this fork's `dev.sajidali.compose:compose-gradle-plugin`, so Compose Resources packaging
+  works for tvOS with no plugin-id change on your side.
+- `compose.components.resources` resolves its tvOS variant from
+  `dev.sajidali.compose.components:components-resources`; other targets keep the official
+  JetBrains artifact.
 
-**[Get started with Compose Multiplatform](https://jb.gg/start-cmp)**
+Both artifacts are on Maven Central under the `dev.sajidali.*` group prefix. Versions follow
+upstream (the "same-version convention"); the current published line is **1.12.0**.
 
-## Android
+Full documentation: https://sajidalidev.github.io/compose-tvos/ — and [TVOS.md](TVOS.md) in this repo.
 
-When Android is one of your targets, you get the same experience for Android as if you were developing an Android app 
-using [Jetpack Compose](https://developer.android.com/jetpack/compose).
+## What's in this fork
 
-**[Get started with Compose Multiplatform](https://jb.gg/start-cmp)**
+### Branches
 
-## Desktop
+| Branch | Contents |
+|---|---|
+| `tvos-main` | upstream + the tvOS commits (rebased onto upstream periodically) |
+| `release-1.12-tvos` | upstream `v1.12.0` + the tvOS commits + 1.12.0 pins, redirect-plugin build wiring and the Central staging script; the 1.12.0 artifacts were built from here |
+| `tvos-publishing` | the `dev.sajidali` publication overrides (group override, plugin-marker suppression, POM metadata) |
 
-Compose Multiplatform targets the JVM and supports high-performance hardware-accelerated UI rendering on all major desktop
-platforms – macOS, Windows, and Linux.
+### What was changed
 
-It has desktop extensions for menus, keyboard shortcuts, window manipulation, and notification management.
+- `tvosArm64` / `tvosSimulatorArm64` targets added to `components-resources`
+  (`components/resources/library/build.gradle.kts`). `tvosX64` is not built.
+- The Compose Gradle plugin's iOS resource-sync tasks (`IosResourcesTasks.kt`) extended to the
+  `appletvos` / `appletvossimulator` platforms, so resources sync into an Xcode tvOS build the same
+  way they do for iOS.
+- Upstream's `script` resource qualifier mirrored into the tvOS `ResourceEnvironment`.
+- The `components` build applies the compose-tvos redirect plugin itself
+  (`components/settings.gradle.kts`), so the resources library's tvOS targets resolve
+  `dev.sajidali.compose.*` exactly like a consumer app does — no `org.jetbrains` shadow set is
+  needed to build it.
+- Publication under `dev.sajidali.*` via `-Ppublication.groupId=...`, with the `org.jetbrains.compose`
+  plugin marker suppressed so it is never republished under the overridden group. Published
+  module metadata still declares `org.jetbrains.compose.*` dependencies; the redirect plugin
+  resolves those at consumer build time.
 
-**[Get started with Compose Multiplatform](https://jb.gg/start-cmp)**
+### Published artifacts (1.12.0)
 
-## Web
+- `dev.sajidali.compose.components:components-resources` — umbrella plus android, desktop,
+  iosArm64, iosSimulatorArm64, macosArm64, js, wasmJs, tvosArm64 and tvosSimulatorArm64 modules.
+- `dev.sajidali.compose:compose-gradle-plugin`.
 
-> Web support is in Beta, making it a great time to give it a try. Check out our [blog post](https://blog.jetbrains.com/kotlin/2025/09/compose-multiplatform-1-9-0-compose-for-web-beta/) to learn more about the progress made to reach this milestone.
-> We would appreciate your feedback on it in the public Slack channel [#compose-web](https://kotlinlang.slack.com/archives/C01F2HV7868/p1678887590205449). 
-> If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+## Building / publishing locally
 
-You can experiment with sharing your mobile or desktop UIs with the web. Compose Multiplatform for web is based on [Kotlin/Wasm](https://kotl.in/wasm), 
-the newest target for Kotlin Multiplatform projects. It allows Kotlin developers to run their code in the browser with 
-all the benefits that WebAssembly has to offer, such as good and predictable performance for your applications.
+Publish the core fork to mavenLocal first (see
+[compose-multiplatform-core-tvos](https://github.com/sajidalidev/compose-multiplatform-core-tvos)),
+then:
 
-**[Get started with Compose Multiplatform for web](https://jb.gg/start-cmp)**
+```bash
+# components-resources, resolving the core fork from ~/.m2
+./gradlew -p components -Pcompose.useMavenLocal=true \
+    -Ppublication.groupId=dev.sajidali.compose.components :resources:library:publishToMavenLocal
 
-## Libraries
+# the Gradle plugin
+./gradlew -p gradle-plugins -Ppublication.groupId=dev.sajidali.compose :compose:publishToMavenLocal
+```
 
-### Compose HTML
+`-Ptvos.redirect.manifestUrl=file:///...` points the redirect plugin at a local version manifest
+when testing an unpublished core release; `-Ptvos.redirect.verbose=true` logs what it resolves.
 
-Compose HTML is a library targeting [Kotlin/JS](https://kotlinlang.org/docs/js-overview.html) that provides Composable building blocks 
-for creating web user interfaces with HTML and CSS.    
+`scripts/stage-central-bundle.sh <version>` signs and stages a Maven Central Portal bundle from
+`~/.m2`. It never uploads.
 
-> Note that Compose HTML is not a multiplatform library. It can be used only with Kotlin/JS.
+## Related repositories
 
-## Learn more
+- [sajidalidev/compose-tvos](https://github.com/sajidalidev/compose-tvos) — the settings plugin,
+  version manifest and docs. Start here.
+- [sajidalidev/compose-multiplatform-core-tvos](https://github.com/sajidalidev/compose-multiplatform-core-tvos)
+  — fork of the Compose runtime/ui/foundation/material3/navigation/lifecycle sources with the
+  actual tvOS rendering, focus and Siri Remote work.
+- [sajidalidev/koin](https://github.com/sajidalidev/koin) — Koin with tvOS targets.
+- [sajidalidev/coil-tvos](https://github.com/sajidalidev/coil-tvos) — Coil 3 with tvOS targets.
+- [sajidalidev/jetstream-tvos](https://github.com/sajidalidev/jetstream-tvos) — sample app
+  (Google's JetStream) running on Apple TV.
 
-* [FAQ](https://jb.gg/cmp-faq)
-* [Samples](https://jb.gg/cmp-samples)
-* [Tutorials](tutorials/README.md)
-* [Compatibility and versioning](https://jb.gg/cmp-versioning)
-* [Changelog](CHANGELOG.md)
-* [Contibution guide](CONTRIBUTING.md)
+## License
 
-## Get help
-
-There are dedicated public Slack channels for [#compose-ios](https://kotlinlang.slack.com/archives/C0346LWVBJ4/p1678888063176359), [#compose-desktop](https://kotlinlang.slack.com/archives/C01D6HTPATV) and [#compose-web](https://kotlinlang.slack.com/archives/C01F2HV7868/p1678887590205449), as well as the general [#compose](https://kotlinlang.slack.com/archives/CJLTWPH7S) channel.
-
-If you encounter any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
-
+Same as upstream: [Apache License 2.0](LICENSE.txt). Copyright for the upstream code remains with
+JetBrains s.r.o. and the original contributors.
