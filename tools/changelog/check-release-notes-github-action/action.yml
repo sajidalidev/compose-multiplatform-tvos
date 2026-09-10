@@ -1,13 +1,14 @@
 # Reusable GitHub action needed to check Release Notes in the PR description. Used by multiple Compose repositories.
 
 name: Check Release Notes in the description
+description: Check the pull request release notes using the Kotlin changelog tool
 
 inputs:
   checkout_ref:
-    type: string
+    description: Compose Multiplatform revision containing the changelog tool
     default: 'master'
   kotlin_version:
-    type: string
+    description: Kotlin compiler version for the changelog tool
     default: '2.3.10'
 
 runs:

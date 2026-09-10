@@ -1,0 +1,20 @@
+{
+  "separatePluginVersion": true,
+  "groups": {
+    "dev.sajidali.compose": "{plugin_version}",
+    "dev.sajidali.compose.components": "{version}"
+  },
+  "builds": [
+    {
+      "wrapper": "gradle-plugins/gradlew",
+      "project": "gradle-plugins",
+      "env": {"COMPOSE_GRADLE_PLUGIN_VERSION": "{plugin_version}"},
+      "arguments": ["-Ppublication.groupId=dev.sajidali.compose", "-Pdeploy.version={plugin_version}", ":compose:publishPluginMavenPublicationToMavenLocal"]
+    },
+    {
+      "wrapper": "components/gradlew",
+      "project": "components",
+      "arguments": ["-Ppublication.groupId=dev.sajidali.compose.components", "-Pdeploy.version={version}", "-Pcompose.useMavenLocal=false", ":resources:library:publishKotlinMultiplatformPublicationToMavenLocal", ":resources:library:publishTvosArm64PublicationToMavenLocal", ":resources:library:publishTvosSimulatorArm64PublicationToMavenLocal"]
+    }
+  ]
+}

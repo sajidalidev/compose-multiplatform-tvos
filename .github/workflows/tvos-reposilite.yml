@@ -1,0 +1,64 @@
+name: tvOS Reposilite
+on:
+  push:
+    branches: [tvos-main]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Upload after validation (false builds and validates only)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: tvos-reposilite
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/tvos-main'
+    runs-on: [self-hosted, macOS, ARM64, tvos-release]
+    environment: reposilite
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Configure Mac toolchain
+        run: |
+          {
+            echo "JAVA_HOME=${TVOS_JDK21_HOME:?Configure TVOS_JDK21_HOME on runner}"
+            echo 'DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer'
+            echo "GRADLE_USER_HOME=${TVOS_CI_GRADLE_HOME:?Configure TVOS_CI_GRADLE_HOME on runner}"
+            base=$(sed -n 's/^deploy.version=//p' components/gradle.properties)
+            plugin=$(sed -n 's/^deploy.version=//p' gradle-plugins/gradle.properties)
+            suffix="-dev.$(date -u +%Y%m%d).$GITHUB_RUN_ID.$GITHUB_RUN_ATTEMPT"
+            echo "RELEASE_VERSION=$base$suffix"
+            echo "PLUGIN_VERSION=$plugin$suffix"
+          } >> "$GITHUB_ENV"
+          mkdir -p build/release
+      - name: Test release tooling
+        run: python3 -m unittest discover -s scripts/tests -v
+      - name: Review plan
+        run: python3 scripts/release.py reposilite --version "$RELEASE_VERSION" --plugin-version "$PLUGIN_VERSION" --dry-run | tee build/release/plan.log
+      - name: Build and validate publications
+        run: python3 scripts/release.py reposilite --version "$RELEASE_VERSION" --plugin-version "$PLUGIN_VERSION" | tee build/release/build.log
+      - name: Publish and verify Reposilite
+        if: (github.event_name == 'push' && vars.REPOSILITE_AUTO_PUBLISH == 'true') || (github.event_name == 'workflow_dispatch' && inputs.publish)
+        run: |
+          set -a
+          source "$HOME/.config/tvos-reposilite.env"
+          set +a
+          python3 scripts/release.py reposilite --version "$RELEASE_VERSION" --plugin-version "$PLUGIN_VERSION" --publish | tee build/release/publish.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/release/*.log
+            build/release/**/release.json
+          retention-days: 30

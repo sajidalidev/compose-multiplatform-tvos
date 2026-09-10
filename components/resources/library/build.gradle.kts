@@ -203,10 +203,18 @@ kotlin {
 // compilation (which needs a consistent variant set across every target sharing a source set).
 // See task-9a-report.md in compose-tvos-redirect for the full investigation.
 configureMavenPublication(
-    groupId = "org.jetbrains.compose.components",
+    groupId = providers.gradleProperty("publication.groupId").getOrElse("org.jetbrains.compose.components"),
     artifactId = "components-resources",
     name = "Resources for Compose JB"
 )
+
+// Central requires a javadoc archive for native publications; Kotlin/Native has no JavaDoc.
+val releaseJavadoc by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+publishing.publications.withType<MavenPublication>().configureEach {
+    artifact(releaseJavadoc)
+}
 
 apiValidation {
     @OptIn(ExperimentalBCVApi::class)
