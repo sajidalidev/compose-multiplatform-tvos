@@ -47,11 +47,14 @@ class ReleaseTests(unittest.TestCase):
                         release.upload_reposilite(Path(tmp))
                     self.assertEqual([call.args[0].method for call in request.call_args_list], ['HEAD'])
 
-    def test_central_refuses_ci(self):
-        result = subprocess.run(['python3', str(SCRIPT), 'central', '--version', '1.0', '--plugin-version', '1.0', '--dry-run'],
-                                env=dict(os.environ, CI='true'), capture_output=True, text=True)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('manual only', result.stderr)
+    def test_releases_refuse_ci(self):
+        for destination in ('central', 'reposilite'):
+            for variable in ('CI', 'GITHUB_ACTIONS'):
+                result = subprocess.run(['python3', str(SCRIPT), destination, '--version', '1.0', '--plugin-version', '1.0', '--dry-run'],
+                                        env=dict(os.environ, **{variable: 'true'}), capture_output=True, text=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('manual only', result.stderr)
+
 
 
 if __name__ == '__main__':

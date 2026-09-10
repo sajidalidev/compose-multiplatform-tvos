@@ -1,15 +1,8 @@
 # tvOS releases
 
-Reposilite uses the self-hosted Mac on trusted `tvos-main` pushes. Pull requests use
-free GitHub-hosted runners. No workflow publishes to Maven Central or the Plugin Portal.
-
-The `reposilite` environment must allow only `tvos-main`. Set its variable
-`REPOSILITE_AUTO_PUBLISH=true` to enable automatic uploads after validation. Keep it
-`false` during rollout. Manual workflow dispatch defaults to a build-only rehearsal.
-The runner needs labels `self-hosted, macOS, ARM64, tvos-release`, Xcode, the Android
-SDK, and environment variables `TVOS_JDK21_HOME` and `TVOS_CI_GRADLE_HOME`. Publishing
-loads `REPOSILITE_URL`, `REPOSILITE_USER`, and `REPOSILITE_TOKEN` from
-`~/.config/tvos-reposilite.env` on the Mac. Outside contributors never run on that Mac.
+Both Reposilite and Central are manual-only. No self-hosted runner or publishing
+workflow is used. PR checks run on free GitHub-hosted runners. Both release
+entry points reject CI. Run with a JDK 21 `JAVA_HOME`, Xcode, and the Android SDK.
 
 Local rehearsal (builds real artifacts, validates metadata and uploads nothing):
 
@@ -19,8 +12,9 @@ python3 scripts/release.py reposilite --version 1.12.0-dev.20260910.1 --plugin-v
 
 Add `--dry-run` to print the commands without building or network access. Add
 `--publish` to build, validate, reject any existing remote paths, upload, and verify
-every remote file. Use a new version after any partial upload. CI assigns immutable
-versions from the pinned base versions, UTC date, run ID, and attempt.
+every remote file. Use a new version after any partial upload. Choose an unused version explicitly for each upload. Load `REPOSILITE_URL`,
+`REPOSILITE_USER`, and `REPOSILITE_TOKEN` from your local credentials file before
+using `--publish` (for example, `set -a; source ~/.config/tvos-reposilite.env; set +a`).
 
 Central is manual-only and requires explicit versions:
 

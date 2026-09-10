@@ -118,8 +118,8 @@ def main():
     parser.add_argument('--dry-run', action='store_true', help='Print commands without building or network access')
     parser.add_argument('--publish', action='store_true', help='Upload after building and validating; default stages only')
     args = parser.parse_args()
-    if args.destination == 'central' and (os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS')):
-        parser.error('Central releases are manual only')
+    if os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS'):
+        parser.error('Releases are manual only; run this script locally')
     if args.dry_run and args.publish:
         parser.error('--dry-run and --publish cannot be combined')
     config = json.loads((ROOT / 'scripts/release-config.json').read_text())
